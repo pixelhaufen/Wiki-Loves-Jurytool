@@ -1,0 +1,79 @@
+{
+    margin: 0px;
+    padding: 0px;
+}
+body
+{
+	font-size: 14px;
+	background-color: white;
+	text-align: center;
+    margin: 0px;
+    padding: 0px;
+}
+center
+{
+    margin: 0px;
+    padding: 0px;
+}
+a img
+{
+	border: none;
+}
+a.st
+{
+	color: orange;
+}
+a.sta
+{
+    background-image: url(../theme/img/sb.png);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    background-size: 16px 16px;
+	color: orange;
+}
+a.stm
+{
+    background-image: url(../theme/img/cb.png);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    background-size: 16px 16px;
+	color: green;
+}
+a.ste
+{
+    background-image: url(../theme/img/db.png);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    background-size: 16px 16px;
+	color: red;
+}
+p.menue
+{
+	text-align: left;
+	padding-left: 40px;
+}
+p.right
+{
+	text-align: right;
+}
+.star
+{
+    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0\'/></filter></svg>#grayscale");
+    filter: grayscale(0%);
+    -webkit-filter: grayscale(0%);
+    -moz-filter: grayscale(0%);
+    -ms-filter: grayscale(0%);
+    -o-filter: grayscale(0%);
+    filter: none;
+    zoom:1;
+}
+.star_gray
+{
+    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+    filter: grayscale(100%);
+    -webkit-filter: grayscale(100%);
+    -moz-filter: grayscale(100%);
+    -ms-filter: grayscale(100%);
+    -o-filter: grayscale(100%);
+    filter: gray;
+}
