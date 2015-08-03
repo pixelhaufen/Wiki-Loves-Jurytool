@@ -58,7 +58,7 @@ else
 	$menue = $uploader = "";
 	
 	// prejury or jury admin or manager
-	$log = login($db,"_v");
+	$log = login($db,"v_");
 	if($log != "OK") // no prejury member
 	{
 		$log = login($db,""); // try jury
@@ -69,7 +69,7 @@ else
 		$log = login($db,""); // try jury
 		if($log != "OK") // no jury member
 		{
-			$log = login($db,"_v");
+			$log = login($db,"v_");
 		}
 		else // both
 		{
@@ -77,11 +77,11 @@ else
 			{
 				if ($userlevel == 1) // admin in jury
 				{
-					$log = login($db,"_v");
+					$log = login($db,"v_");
 				}
 				else if (($userlevel == 2)&&($_SESSION['userlevel'] != 2)) // mamanger in prejury
 				{
-					$log = login($db,"_v");
+					$log = login($db,"v_");
 				}
 			}
 		}

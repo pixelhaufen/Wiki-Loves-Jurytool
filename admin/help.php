@@ -54,12 +54,34 @@ else
 {
 	$menue = $uploader = "";
 	
-	// prejury or jury admin
-	// FIXME: user in prejury and admin in jury cannot login
-	$log = login($db);
-	if($log != "OK")
+	// prejury or jury admin or manager
+	$log = login($db,"v_");
+	if($log != "OK") // no prejury member
 	{
-		$log = login($db,"");
+		$log = login($db,""); // try jury
+	}
+	else
+	{
+		$userlevel = $_SESSION['userlevel'];
+		$log = login($db,""); // try jury
+		if($log != "OK") // no jury member
+		{
+			$log = login($db,"v_");
+		}
+		else // both
+		{
+			if($_SESSION['userlevel'] != 1) // no admin in prejury
+			{
+				if ($userlevel == 1) // admin in jury
+				{
+					$log = login($db,"v_");
+				}
+				else if (($userlevel == 2)&&($_SESSION['userlevel'] != 2)) // mamanger in prejury
+				{
+					$log = login($db,"v_");
+				}
+			}
+		}
 	}
 	
 	if($log=="OK")
