@@ -65,8 +65,9 @@ function getdata($url, $db)
 					$res->close();
 					if ($num_names < 1)
 					{
-						$cattest = strpos($value, 'Category'); // a Category is not a foto...
-						if($cattest === false) // save what we know
+						// e.g. a Category is not a foto... save what we know
+						$isfile = strpos($value, 'File:');
+						if(($isfile !== false)&&($isfile==0))
 						{
 							// note that online is still 0 - we are not ready yet 
 							$sql = "INSERT INTO " . $config['dbprefix'] . "fotos(name, user, date, time, url, descriptionurl) VALUES ('$value','-','-','-','-','-')"; 
@@ -75,8 +76,9 @@ function getdata($url, $db)
 					}
 					else if($num_names == 1)
 					{
-						$cattest = strpos($value, 'Category'); // a Category is not a foto...
-						if($cattest === false)
+						// e.g. a Category is not a foto...
+						$isfile = strpos($value, 'File:');
+						if(($isfile !== false)&&($isfile==0))
 						{
 							// mark as still here
 							$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET online='2' WHERE `name` = '$value'";

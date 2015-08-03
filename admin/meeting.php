@@ -59,14 +59,14 @@ else
 	if($log=="OK")
 	{
 		
-		// user but no admin
-		if($_SESSION['admin']==0)
+		// admin 1 or manager 2
+		if(($_SESSION['userlevel']==1)||($_SESSION['userlevel']==2))
+		{
+			$uploader = get_meeting($db);
+		}
+		else // user
 		{
 			$uploader = $text["contact_admin"] . ": " . $config['mail'];
-		}
-		else
-		{ // admin
-			$uploader = get_meeting($db);
 		} // end admin
 	} // end loggeg in
 } // end $db

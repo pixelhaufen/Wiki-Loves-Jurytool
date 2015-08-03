@@ -45,7 +45,7 @@ function login($db, $type = "v_")
 	{
 		$user = $db->real_escape_string($_SESSION['us']);
 		$pw = $db->real_escape_string($_SESSION['pw']);
-		$sql = "SELECT `width`, `info`, `admin` FROM `" . $config['dbprefix'] . $type . "jury` WHERE `lname` LIKE '$user' AND `pw` LIKE '$pw'";
+		$sql = "SELECT `width`, `info`, `userlevel` FROM `" . $config['dbprefix'] . $type . "jury` WHERE `lname` LIKE '$user' AND `pw` LIKE '$pw'";
 		$res = $db->query($sql);
 		$numuser = $res->num_rows;
 	}
@@ -55,7 +55,7 @@ function login($db, $type = "v_")
 		$row = $res->fetch_array(MYSQLI_ASSOC);
 		$_SESSION['width'] = $row['width'];
 		$_SESSION['info'] = $row['info'];
-		$_SESSION['admin'] = $row['admin'];
+		$_SESSION['userlevel'] = $row['userlevel'];
 
 		$sql = "UPDATE `" . $config['dbprefix'] . $type . "jury` SET `time`='".time()."' WHERE `lname`= '".$user."'";
 		$db->query($sql);

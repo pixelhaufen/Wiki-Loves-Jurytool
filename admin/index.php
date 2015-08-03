@@ -57,12 +57,34 @@ else
 {
 	$menue = $uploader = "";
 	
-	// prejury or jury admin
-	// FIXME: user in prejury and admin in jury cannot login
-	$log = login($db);
-	if($log != "OK")
+	// prejury or jury admin or manager
+	$log = login($db,"_v");
+	if($log != "OK") // no prejury member
 	{
-		$log = login($db,"");
+		$log = login($db,""); // try jury
+	}
+	else
+	{
+		$userlevel = $_SESSION['userlevel'];
+		$log = login($db,""); // try jury
+		if($log != "OK") // no jury member
+		{
+			$log = login($db,"_v");
+		}
+		else // both
+		{
+			if($_SESSION['userlevel'] != 1) // no admin in prejury
+			{
+				if ($userlevel == 1) // admin in jury
+				{
+					$log = login($db,"_v");
+				}
+				else if (($userlevel == 2)&&($_SESSION['userlevel'] != 2)) // mamanger in prejury
+				{
+					$log = login($db,"_v");
+				}
+			}
+		}
 	}
 	
 	if($log=="OK")
@@ -71,12 +93,16 @@ else
 		$log = menue2();
 		
 		// user but no admin
-		if($_SESSION['admin']==0)
+		if($_SESSION['userlevel']==0)
 		{
 			$uploader = $text["contact_admin"] . ": " . $config['mail'];
 		}
-		else
-		{ // admin
+		else if($_SESSION['userlevel']==2) // manager
+		{
+			$uploader = '<meta http-equiv="refresh" content="1; url=meeting.php" />';
+		}
+		else // admin
+		{
 			$menue = menue();
 			
 			// menue

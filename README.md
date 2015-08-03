@@ -21,6 +21,7 @@ These features were borne in mind for the wiki community in Austria after many (
 * Show/hide information about the progress of the prejury.
 * Change the size of the images in prejury and jury-select.
 * Hide/show the menu in prejury and jury-select.
+* user level `user` (can vote), `manager` (+ can manage jury meeting), `admin` (+ logfiles, user creation, move  pictures for the jury-select, export results)
 
 removed
 
@@ -90,7 +91,6 @@ Nice to have stuff...
 
 Bugs
 
-- if user in prejury and admin in jury you cannot login as admin. **wanted behavior** -> can access `URL/admin/meeting.php` but not user creation, logfiles, etc. -> **better** ad user level -> `user`, `manager`, `admin`
 - feel free to contact me <http://pixelhaufen.info>
 
 

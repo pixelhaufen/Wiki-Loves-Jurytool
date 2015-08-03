@@ -26,7 +26,7 @@ function commons_get_new_info($db)
 	global $config;
 	
 	// get information about files from commons
-	$sql = "SELECT `name` FROM `" . $config['dbprefix'] . "fotos` WHERE `user` = '-' AND (`online` =  '1' OR  `online` =  '2')";
+	$sql = "SELECT `name` FROM `" . $config['dbprefix'] . "fotos` WHERE `user` = '-'";
 	$res = $db->query($sql);
 
 	if ($res)

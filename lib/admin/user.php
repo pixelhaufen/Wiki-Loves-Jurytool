@@ -25,7 +25,7 @@ function create_user($db, $type)
 	global $config;
 	global $text;
 	
-	$sql = "INSERT INTO `".$config["dbprefix"].$type."jury` (`lname`, `pw`, `admin`) VALUES ('" . $_POST["user"] . "', '" . sha1($_POST["password"].$config["salt"]) . "', " . $_POST["admin"] . ")";
+	$sql = "INSERT INTO `".$config["dbprefix"].$type."jury` (`lname`, `pw`, `userlevel`) VALUES ('" . $_POST["user"] . "', '" . sha1($_POST["password"].$config["salt"]) . "', " . $_POST["userlevel"] . ")";
 	$db->query($sql);
 	
 	$uploader = "<p>" . $text['user_created'].  ": ". $_POST["user"] . "</p>";
@@ -53,11 +53,12 @@ function create_user_form($db,$programm,$type)
 			</tr>
 
 			<tr>
-			<td>'.$text['admin'].'</td>
+			<td>'.$text['userlevel'].'</td>
 			<td>
-				<select name="admin">
-					<option value="1">'.$text['Yes'].'</option>
-					<option value="0" selected>'.$text['No'].'</option>
+				<select name="userlevel">
+					<option value="1">'.$text['admin'].'</option>
+					<option value="2">'.$text['manager'].'</option>
+					<option value="0" selected>'.$text['user'].'</option>
 				</select>
 			</td>
 			</tr>
@@ -75,13 +76,19 @@ function create_user_form($db,$programm,$type)
 
 function user($user)
 {
+	global $text;
+	
 	if($user==1)
 	{
-		return "admin";
+		return $text['admin'];
+	}
+	else if ($user==2)
+	{
+		return $text['manager'];
 	}
 	else
 	{
-		return "user";
+		return $text['user'];
 	}
 }
 
@@ -124,7 +131,7 @@ function prejury_user($db)
 {
 	global $text;
 	
-	$uploader = user_list($db, "v_");
+	$uploader = "";
 	
 	if(isset($_POST["user"]))
 	{
@@ -135,6 +142,8 @@ function prejury_user($db)
 		$uploader .= create_user_form($db, "pj=s", $text['prejury']);
 	}
 	
+	$uploader .= user_list($db, "v_");
+	
 	return $uploader;
 }
 
@@ -142,7 +151,7 @@ function jury_user($db)
 {
 	global $text;
 	
-	$uploader = user_list($db, "");
+	$uploader = "";
 	
 	if(isset($_POST["user"]))
 	{
@@ -152,6 +161,8 @@ function jury_user($db)
 	{
 		$uploader .= create_user_form($db, "j=s", $text['prejury']);
 	}
+	
+	$uploader .= user_list($db, "");
 	
 	return $uploader;
 }

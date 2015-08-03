@@ -83,7 +83,7 @@ else if(isset($_POST["dbhost"]))
       `pw` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
       `width` int(11) NOT NULL DEFAULT '500',
       `info` int(11) NOT NULL DEFAULT '0',
-      `admin` int(11) NOT NULL DEFAULT '0',
+      `userlevel` int(11) NOT NULL DEFAULT '0',
       `time` int(11) NOT NULL
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
 
@@ -100,7 +100,7 @@ else if(isset($_POST["dbhost"]))
       `pw` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
       `width` int(11) NOT NULL DEFAULT '500',
       `info` int(11) NOT NULL DEFAULT '0',
-      `admin` int(11) NOT NULL DEFAULT '0',
+      `userlevel` int(11) NOT NULL DEFAULT '0',
       `time` int(11) NOT NULL
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
 
@@ -118,9 +118,9 @@ else if(isset($_POST["dbhost"]))
 	  `sum` int(11) NOT NULL DEFAULT '0'
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
 
-    $sql7 = "INSERT INTO `" . $_POST["dbprefix"] . "jury`(`lname`,`pw`,`admin`) VALUES ('" . $_POST["admin"] . "','" . sha1($_POST["adminpassword"].$_POST["salt"]) . "','1');";
+    $sql7 = "INSERT INTO `" . $_POST["dbprefix"] . "jury`(`lname`,`pw`,`userlevel`) VALUES ('" . $_POST["admin"] . "','" . sha1($_POST["adminpassword"].$_POST["salt"]) . "','1');";
 
-    $sql8 = "INSERT INTO `" . $_POST["dbprefix"] . "v_jury`(`lname`,`pw`,`admin`) VALUES ('" . $_POST["admin"] . "','" . sha1($_POST["adminpassword"].$_POST["salt"]) . "','1');";
+    $sql8 = "INSERT INTO `" . $_POST["dbprefix"] . "v_jury`(`lname`,`pw`,`userlevel`) VALUES ('" . $_POST["admin"] . "','" . sha1($_POST["adminpassword"].$_POST["salt"]) . "','1');";
 
 	if ($db->connect_error)
 	{
@@ -273,7 +273,7 @@ else
 					<h3><?php echo $text['version']; ?></h3> 
 				</td>
 				<td>
-					<br><input name="version" value="0.1.0">
+					<br><input name="version" value="0.1.1">
 				</td>
 				<td>
 				</td>
