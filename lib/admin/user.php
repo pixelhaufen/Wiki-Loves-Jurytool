@@ -106,6 +106,7 @@ function info($info)
 
 function user_list($db, $type)
 {
+	global $text;
 	global $config;
 	
 	$userlist = '<table border=0 cellpadding=0px width=1000px style="text-align: left; ">';
@@ -118,7 +119,7 @@ function user_list($db, $type)
 			<td>'.$row['pw'].'</td>
 			<td>'.$row['width'].'</td>
 			<td>'.info($row['info']).'</td>
-			<td>'.user($row['admin']).'</td>
+			<td>'.user($row['userlevel']).'</td>
 			<td>'.date('d.m.Y H:i:s',$row['time']).'</td>
 			</tr>';
 	}
