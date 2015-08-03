@@ -95,7 +95,7 @@ Bugs
 
 
 ##License
-Copyright (c) 2011 - 2015 [Ruben Demus](pixelhaufen.at) on behalf of [Wikimedia Austria - WMAT](wikimedia.at).
+Copyright (c) 2011 - 2015 [Ruben Demus](http://pixelhaufen.at) on behalf of [Wikimedia Austria - WMAT](https://wikimedia.at).
 
 Wiki Loves Jurytool is licensed under the **GNU Affero General Public License** version 3 or later. See the COPYING-AGPL file.
 
