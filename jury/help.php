@@ -34,7 +34,6 @@ require_once "../lib/jury/menue.php"; // prejury menue
 	<title><?php echo $config['title'] . " - " . $text["jury"]; ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<link rel="stylesheet" href="../theme/styles.css">
-	<script src="/js/stars.js"></script>
 
 <?php
 
