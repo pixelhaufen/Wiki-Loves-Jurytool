@@ -85,9 +85,8 @@ Nice to have stuff...
 - translations (help pages)
 - in cronjob distinguish deleted and moved files (however seems to be impossible if forwarding on Commons is deleted...)
 - user settings (changing the password)
-- script for prejury to jury-select
 - test more php & mysql versions
-- script for cleaning up after contest (however deleting files an db needs no sctipt)
+- script for cleaning up after contest (however deleting files an db needs no script)
 
 Bugs
 
