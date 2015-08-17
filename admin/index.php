@@ -143,6 +143,14 @@ else
 				{
 					$uploader = html_table(get_file("../log/login.txt"));
 				}
+				else if($_GET["l"] == "jury")
+				{
+					$uploader = html_table(get_file("../log/jury.txt"));
+				}
+				else if($_GET["l"] == "prejury")
+				{
+					$uploader = html_table(get_file("../log/prejury.txt"));
+				}
 				else // add own logfiles here
 				{
 					$uploader = "";

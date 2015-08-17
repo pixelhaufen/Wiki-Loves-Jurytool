@@ -51,7 +51,7 @@ if ($db->connect_error)
 	// log error
 	if($config['log']!="NO")
 	{
-		append_file("log/jury.txt","\n".date(DATE_RFC822)."\tdb connect_error\tmain()");
+		append_file("../log/jury.txt","\n".date(DATE_RFC822)."\tdb connect_error\tmain()");
 	}
 }
 else

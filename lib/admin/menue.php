@@ -46,7 +46,7 @@ function menue()
 	$menue .= '<a href="index.php?j=s" class="st">'.$text["jury"].' '.$text["user_created"].'</a><br>';
 	$menue .= '<a href="index.php?p2j=s" class="st">'.$text["created_jury"].'</a><br>';
 	$menue .= '<a href="index.php?res=s" class="st">'.$text["jury_result"].'</a><br>';
-	$menue .= 'logfile: <a href="index.php?m=l&l=cron" class="st">cron</a> <a href="index.php?m=l&l=admin" class="st">admin</a> <a href="index.php?m=l&l=login" class="st">login</a><br>';
+	$menue .= 'logfile: <a href="index.php?m=l&l=cron" class="st">cron</a> <a href="index.php?m=l&l=prejury" class="st">prejury</a> <a href="index.php?m=l&l=jury" class="st">jury</a> <a href="index.php?m=l&l=admin" class="st">admin</a> <a href="index.php?m=l&l=login" class="st">login</a><br>';
 	$menue .= '<a href="meeting.php" class="st">meeting</a><br>';
 	$menue .= '</p>';
 	

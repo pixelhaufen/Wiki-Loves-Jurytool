@@ -30,7 +30,20 @@ function login($db, $type = "v_")
 	{
 		if($_GET["p"] == "logout")
 		{
-			session_destroy();
+			if(version_compare(phpversion(), '5.4.0', '>='))
+			{
+				if(session_status() != PHP_SESSION_NONE)
+				{
+					session_destroy();
+				}
+			}
+			else
+			{
+				if(session_id() != "")
+				{
+					session_destroy();
+				}
+			}
 			$_SESSION['us'] = "";
 			$_SESSION['pw'] = "";
 		}
@@ -64,7 +77,7 @@ function login($db, $type = "v_")
 	}
 	else
 	{
-		if(isset($_POST["name"]))
+		if(isset($_POST["name"]) && ($config['log']!="NO"))
 		{
 			append_file("../log/login.txt","\n" . date(DATE_RFC822) . "\t" . $_SESSION['us'] . "\t" . $_SESSION['pw']);
 		}
