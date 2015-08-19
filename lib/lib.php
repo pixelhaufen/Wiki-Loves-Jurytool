@@ -49,25 +49,15 @@ function get_file($file)
 	return $ausgabe;
 }
 
-function html_table_($data)
+function html_table($data,$append="")
 {
-	$data = "1".$data;
-	$data = str_replace("\t", "2", $data);
-	$data = str_replace("\r\n", "3", $data);
-	$data = str_replace("\r", "3", $data);
-	$data = str_replace("\n", "3", $data);
-	$data .= "</td></tr><table>";
-	return $data;
-}
-
-function html_table($data)
-{
-	$data = '<table width = "1000px" style="text-align: left; table-layout:fixed;"><tr> <td width="200px">'.$data;
-	$data = str_replace("\t", '</td><td>', $data);
-	$data = str_replace("\r\n", '</td></tr><tr><td>', $data);
-	$data = str_replace("\r", "</td></tr><tr><td>", $data);
-	$data = str_replace("\n", "</td></tr><tr><td>", $data);
-	$data .= "</td></tr></table>";
+	echo $append."ü";
+	$data = '<table width = "1000px" style="text-align: left; table-layout:fixed;"><tr> <td width="200px">'.$append.$data;
+	$data = str_replace("\t", $append.'</td><td>'.$append, $data);
+	$data = str_replace("\r\n", $append.'</td></tr><tr><td>'.$append, $data);
+	$data = str_replace("\r", $append."</td></tr><tr><td>".$append, $data);
+	$data = str_replace("\n", $append."</td></tr><tr><td>".$append, $data);
+	$data .= $append."</td></tr></table>";
 	return $data;
 }
 

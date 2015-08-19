@@ -135,21 +135,21 @@ else
 				{
 					$uploader = html_table(get_file("../log/cron.txt"));
 				}
+				else if($_GET["l"] == "prejury")
+				{
+					$uploader = html_table(get_file("../log/prejury.txt"));
+				}
+				else if($_GET["l"] == "jury")
+				{
+					$uploader = html_table(get_file("../log/jury.txt"));
+				}
 				else if($_GET["l"] == "admin")
 				{
 					$uploader = html_table(get_file("../log/admin.txt"));
 				}
 				else if($_GET["l"] == "login")
 				{
-					$uploader = html_table(get_file("../log/login.txt"));
-				}
-				else if($_GET["l"] == "jury")
-				{
-					$uploader = html_table(get_file("../log/jury.txt"));
-				}
-				else if($_GET["l"] == "prejury")
-				{
-					$uploader = html_table(get_file("../log/prejury.txt"));
+					$uploader = html_table(get_file("../log/login.txt"),"&rsquo;");
 				}
 				else // add own logfiles here
 				{
