@@ -37,7 +37,7 @@ function jury_result($db)
 	
 	if($max != "")
 	{
-		$sql = "SELECT `name` FROM `".$config["dbprefix"]."points` WHERE `round` = ".$max." ORDER BY `sum` ASC";
+		$sql = "SELECT `name` FROM `".$config["dbprefix"]."points` WHERE `round` = ".$max." ORDER BY `sum` DESC";
 		$res = $db->query($sql);
 	
 		$uploader .= "<p>";
