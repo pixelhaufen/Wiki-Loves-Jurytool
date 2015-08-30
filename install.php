@@ -199,7 +199,7 @@ else if(isset($_POST["dbhost"]))
 	'goal' => ".$_POST["goal"].",
 
 	// language
-	'language' => '".$_POST["language"]."', // de-at, de, en
+	'language' => '".$_POST["language"]."', // de-at, de, en, sr
 
 	// category Commons
 	'catadd' => array(
@@ -348,7 +348,7 @@ else
 					<br><input name="language" value="en">
 				</td>
 				<td>
-					<br>de-at, de, en<br>
+					<br>de-at, de, en, sr<br>
 					<?php echo $text['language_info']; ?>
 				</td>
 			</tr>
