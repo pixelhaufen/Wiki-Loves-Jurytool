@@ -51,7 +51,6 @@ function get_file($file)
 
 function html_table($data,$append="")
 {
-	echo $append."ü";
 	$data = '<table width = "1000px" style="text-align: left; table-layout:fixed;"><tr> <td width="200px">'.$append.$data;
 	$data = str_replace("\t", $append.'</td><td>'.$append, $data);
 	$data = str_replace("\r\n", $append.'</td></tr><tr><td>'.$append, $data);
