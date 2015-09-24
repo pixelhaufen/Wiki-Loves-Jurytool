@@ -244,32 +244,32 @@ function next_foto($db, $programm)
 	{
 		// ignored
 		case "0":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 0";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 0 ORDER BY  `votefiles`.`sorttime` DESC";
 		break;
 		
 		// 1 star
 		case "1":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 1";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 1 ORDER BY  `votefiles`.`sorttime` DESC";
 		break;
 		
 		// 2 stars
 		case "2":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 2";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 2 ORDER BY  `votefiles`.`sorttime` DESC";
 		break;
 		
 		// 3 stars
 		case "3":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 3";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 3 ORDER BY  `votefiles`.`sorttime` DESC";
 		break;
 		
 		// 4 stars
 		case "4":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 4";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 4 ORDER BY  `votefiles`.`sorttime` DESC";
 		break;
 		
 		// 5 stars
 		case "5":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 5";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 5 ORDER BY  `votefiles`.`sorttime` DESC";
 		break;
 		
 		// unseen

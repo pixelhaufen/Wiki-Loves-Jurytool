@@ -227,13 +227,13 @@ function next_foto($db, $programm)
 	switch($programm)
 	{
 		case "gemerkt":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user' AND `vote` = 1) votefiles LEFT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name`";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user' AND `vote` = 1) votefiles LEFT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` ORDER BY `votefiles`.`sorttime` DESC";
 		break;
 		case "selected":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 2";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 2 ORDER BY `votefiles`.`sorttime` DESC";
 		break;
 		case "notselected":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 10";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 10 ORDER BY `votefiles`.`sorttime` DESC";
 		break;
 		case "ungelesen": 
 			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` IS NULL";
