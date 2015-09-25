@@ -25,7 +25,10 @@ function create_user($db, $type)
 	global $config;
 	global $text;
 	
-	$sql = "INSERT INTO `".$config["dbprefix"].$type."jury` (`lname`, `pw`, `userlevel`) VALUES ('" . $_POST["user"] . "', '" . sha1($_POST["password"].$config["salt"]) . "', " . $_POST["userlevel"] . ")";
+	$user = $db->real_escape_string($_POST["user"]);
+	$pass = $db->real_escape_string(sha1($_POST["password"].$config["salt"]));
+	
+	$sql = "INSERT INTO `".$config["dbprefix"].$type."jury` (`lname`, `pw`, `userlevel`) VALUES ('" . $user . "', '" . $pass . "', " . $_POST["userlevel"] . ")";
 	$db->query($sql);
 	
 	$uploader = "<p>" . $text['user_created'].  ": ". $_POST["user"] . "</p>";

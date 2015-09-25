@@ -50,7 +50,7 @@ function login($db, $type = "v_")
 	}
 	if(isset($_POST["name"]))
 	{
-		$_SESSION['us'] = $db->real_escape_string($_POST["name"]);
+		$_SESSION['us'] = $_POST["name"];
 		$_SESSION['pw'] = $db->real_escape_string(sha1($_POST["pw"].$config["salt"]));
 	}
 	
@@ -66,6 +66,7 @@ function login($db, $type = "v_")
 	if($numuser == 1)
 	{
 		$row = $res->fetch_array(MYSQLI_ASSOC);
+		$user = $db->real_escape_string($_SESSION['us']);
 		$_SESSION['width'] = $row['width'];
 		$_SESSION['info'] = $row['info'];
 		$_SESSION['userlevel'] = $row['userlevel'];

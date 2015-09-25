@@ -27,9 +27,9 @@ function vote($db)
 	
 	if(isset($_GET["a"]))
 	{
-		$file = $_GET["f"];
+		$file = $db->real_escape_string($_GET["f"]);
 		$status = $db->real_escape_string($_GET["a"]);
-		$user = $_SESSION['us'];
+		$user = $db->real_escape_string($_SESSION['us']);
 		$sql = "UPDATE `" . $config['dbprefix'] . "votes` SET online='3' WHERE `name` = '$file' AND user = '$user'";
 		$db->query($sql);
 		$sql = "INSERT INTO " . $config['dbprefix'] . "votes(name,user,vote,time,online) VALUES ('$file','$user','$status','".time()."','1')";
