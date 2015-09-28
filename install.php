@@ -61,8 +61,8 @@ else if(isset($_POST["dbhost"]))
 	$db = new mysqli($_POST["dbhost"], $_POST["dbuser"], $_POST["dbpassword"], $_POST["dbname"]);
 
 	$sql1 = "CREATE TABLE IF NOT EXISTS `".$_POST["dbprefix"]."fotos` (
-      `name` text COLLATE utf8_bin NOT NULL,
-      `user` text COLLATE utf8_bin NOT NULL,
+      `name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+      `user` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
       `date` text COLLATE utf8_bin NOT NULL,
       `time` text COLLATE utf8_bin NOT NULL,
       `size` int(11) NOT NULL DEFAULT '0',
@@ -88,8 +88,8 @@ else if(isset($_POST["dbhost"]))
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
 
     $sql3 = "CREATE TABLE IF NOT EXISTS `".$_POST["dbprefix"]."v_votes` (
-      `name` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-      `user` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+      `name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+      `user` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
       `vote` int(11) NOT NULL DEFAULT '0',
       `time` int(11) NOT NULL,
       `online` int(11) NOT NULL
@@ -105,8 +105,8 @@ else if(isset($_POST["dbhost"]))
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
 
     $sql5 = "CREATE TABLE IF NOT EXISTS `".$_POST["dbprefix"]."votes` (
-      `name` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-      `user` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+      `name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+      `user` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
       `vote` int(11) NOT NULL DEFAULT '0',
       `time` int(11) NOT NULL,
       `online` int(11) NOT NULL
@@ -121,6 +121,19 @@ else if(isset($_POST["dbhost"]))
     $sql7 = "INSERT INTO `" . $_POST["dbprefix"] . "jury`(`lname`,`pw`,`userlevel`) VALUES ('" . $_POST["admin"] . "','" . sha1($_POST["adminpassword"].$_POST["salt"]) . "','1');";
 
     $sql8 = "INSERT INTO `" . $_POST["dbprefix"] . "v_jury`(`lname`,`pw`,`userlevel`) VALUES ('" . $_POST["admin"] . "','" . sha1($_POST["adminpassword"].$_POST["salt"]) . "','1');";
+	
+	$sql9 = "ALTER TABLE `" . $_POST["dbprefix"] . "fotos`
+		ADD KEY `vote` (`vote`),
+		ADD KEY `name` (`name`);";
+	
+	$sql10 = "ALTER TABLE `" . $_POST["dbprefix"] . "v_votes`
+		ADD KEY `vote` (`vote`),
+		ADD KEY `name` (`name`);";
+	
+	$sql11 = "ALTER TABLE `" . $_POST["dbprefix"] . "votes`
+		ADD KEY `vote` (`vote`),
+		ADD KEY `name` (`name`);";
+	
 
 	if ($db->connect_error)
 	{
@@ -133,6 +146,9 @@ else if(isset($_POST["dbhost"]))
 		echo "<pre>".html_nl($sql6)."</pre>";
 		echo "<pre>".html_nl($sql7)."</pre>";
 		echo "<pre>".html_nl($sql8)."</pre>";
+		echo "<pre>".html_nl($sql9)."</pre>";
+		echo "<pre>".html_nl($sql10)."</pre>";
+		echo "<pre>".html_nl($sql11)."</pre>";
 	}
 	else
 	{
@@ -165,6 +181,18 @@ else if(isset($_POST["dbhost"]))
 			echo "<pre>".html_nl($sql7)."</pre>";
 		}
 		if ($db->query($sql8) !== TRUE) {
+			echo "<h3>1. ".$text["no_db"]."</h3>";
+			echo "<pre>".html_nl($sql8)."</pre>";
+		}
+		if ($db->query($sql9) !== TRUE) {
+			echo "<h3>1. ".$text["no_db"]."</h3>";
+			echo "<pre>".html_nl($sql8)."</pre>";
+		}
+		if ($db->query($sql10) !== TRUE) {
+			echo "<h3>1. ".$text["no_db"]."</h3>";
+			echo "<pre>".html_nl($sql8)."</pre>";
+		}
+		if ($db->query($sql11) !== TRUE) {
 			echo "<h3>1. ".$text["no_db"]."</h3>";
 			echo "<pre>".html_nl($sql8)."</pre>";
 		}
@@ -273,7 +301,7 @@ else
 					<h3><?php echo $text['version']; ?></h3> 
 				</td>
 				<td>
-					<br><input name="version" value="0.1.1">
+					<br><input name="version" value="0.2.0">
 				</td>
 				<td>
 				</td>

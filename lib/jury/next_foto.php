@@ -227,22 +227,22 @@ function next_foto($db, $programm)
 	switch($programm)
 	{
 		case "gemerkt":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user' AND `vote` = 1) votefiles LEFT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` ORDER BY `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user' AND `vote` = 1) votefiles LEFT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` ORDER BY `votefiles`.`sorttime` DESC";
 		break;
 		case "selected":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 2 ORDER BY `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 2 ORDER BY `votefiles`.`sorttime` DESC";
 		break;
 		case "notselected":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` = 10 ORDER BY `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 10 ORDER BY `votefiles`.`sorttime` DESC";
 		break;
 		case "ungelesen": 
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` IS NULL";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` IS NULL";
 		break;
 		default:
 			if(isset($_GET["n"]))
 			{
 				$starter = $_GET["n"];
-				$sql = "SELECT count(*) AS max FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` IS NULL";
+				$sql = "SELECT count(*) AS max FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` IS NULL";
 				$res = $db->query($sql);
 				$row = $res->fetch_array(MYSQLI_ASSOC);
 				
@@ -259,7 +259,7 @@ function next_foto($db, $programm)
 			{
 				$starter = 0;
 			}
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` LIKE '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` LIKE `votefotos`.`name` WHERE `votefiles`.`vote` IS NULL LIMIT $starter, 1";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` IS NULL LIMIT $starter, 1";
 			$programm = "";
 		break;
 	}

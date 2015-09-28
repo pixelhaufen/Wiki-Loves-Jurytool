@@ -34,7 +34,8 @@ This Version was written and last tested on one specific server with:
 * php 5.5.24
 * MySQL 5.6.24
 
-However there is a good chance that this will also work with older versions...
+There is a good chance that this will also work with older versions... However, make sure that *Magic
+Quotes* are off.
 
 
 ##Installation
