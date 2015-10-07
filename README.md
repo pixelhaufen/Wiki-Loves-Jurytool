@@ -68,7 +68,7 @@ Quotes* are off.
 5. create a cronjob (this has to be done manually on your system). On *nix see `man crontab` how to call `php /PATH/ON/SERVER/cron.php` regularly. Most probably you can add cronjobs with `crontab -e` and have to add a line like `0 4 * * * cd /PATH/ON/SERVER/; php cron.php`. First populating the database might take some time. Please be patient ;-)
 
 
-##Adminstration
+##Administration
 
 * Watch the logfiles in *log* directory or `URL/admin/index.php`
 * Create the prejury-users (`URL/admin/index.php`) and send a wikimail to the prejury with `URL/prejury/index.php`
