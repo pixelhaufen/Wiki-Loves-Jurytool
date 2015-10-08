@@ -59,8 +59,13 @@ function getdata($url, $db)
 				{
 					// is it a new file?
 					$value = $db->real_escape_string($value);
-					$sql = "SELECT `name` FROM `" . $config['dbprefix'] . "fotos` WHERE `name` LIKE '$value'";
+					$sql = "SELECT `name` FROM `" . $config['dbprefix'] . "fotos` WHERE `name` = '$value'";
 					$res = $db->query($sql);
+					if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+					{
+						append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tgetdata()");
+					}
+					
 					$num_names = $res->num_rows;
 					$res->close();
 					if ($num_names < 1)
@@ -72,6 +77,10 @@ function getdata($url, $db)
 							// note that online is still 0 - we are not ready yet 
 							$sql = "INSERT INTO " . $config['dbprefix'] . "fotos(name, user, date, time, url, descriptionurl) VALUES ('$value','-','-','-','-','-')"; 
 							$db->query($sql);
+							if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+							{
+								append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tgetdata()");
+							}
 						}
 					}
 					else if($num_names == 1)
@@ -83,6 +92,10 @@ function getdata($url, $db)
 							// mark as still here
 							$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET online='2' WHERE `name` = '$value'";
 							$db->query($sql);
+							if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+							{
+								append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tgetdata()");
+							}
 						}
 					}
 					else // an object can't be here twice...
@@ -96,9 +109,17 @@ function getdata($url, $db)
 						// try to fix that:
 						$sql = "DELETE FROM `" . $config['dbprefix'] . "fotos` WHERE `name` = '$value'";
 						$db->query($sql);
+						if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+						{
+							append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tgetdata()");
+						}
 						// note that online is still 0 - we are not ready yet 
 						$sql = "INSERT INTO " . $config['dbprefix'] . "fotos(name, user, date, time, size, width, height, pixel, url, descriptionurl, online) VALUES ('$value','-','-','-',0,0,0,0,'-','-',0)";
 						$db->query($sql);
+						if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+						{
+							append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tgetdata()");
+						}
 						
 					}
 				} // end if title
@@ -114,12 +135,16 @@ function commons_get_list($db)
 {
 	global $config;
 	
+	// set online to 2 in fotos so we know later which images are no longer in this category on commons
+	$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET `online`='1' WHERE `online`='2'";
+	$db->query($sql);
+	if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+	{
+		append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_list()");
+	}
+	
 	foreach($config['catadd'] as $element => $category)
 	{
-		// set online to 2 in fotos so we know later which images are no longer in this category on commons
-		$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET `online`='1' WHERE `online`='2'";
-		$db->query($sql);
-	
 		// commons api query
 		$url='http://commons.wikimedia.org/w/api.php?action=query&list=categorymembers&format=xml&cmtitle=Category:' . $category . '&cmprop=title&continue';
 		// read data and save to db
@@ -138,11 +163,16 @@ function commons_get_list($db)
 			// read data and save to db
 			$continue = getdata($url."=-||&cmcontinue=".$continue, $db);
 		} // end api loop
-
-		// set online to 0 in fotos for images that are no longer in this category on commons
-		$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET `online`='0' WHERE `online`='1'";
-		$db->query($sql);
 	}
+	
+	// set online to 0 in fotos for images that are no longer in this category on commons
+	$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET `online`='0' WHERE `online`='1'";
+	$db->query($sql);
+	if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+	{
+		append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_list()");
+	}
+
 }
 
 ?>

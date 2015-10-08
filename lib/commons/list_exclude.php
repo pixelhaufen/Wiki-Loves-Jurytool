@@ -59,6 +59,10 @@ function getdata_exclude($url, $db) // get list of images from commons
 					$value = $db->real_escape_string($value);
 					$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET exclude='1' WHERE `name` = '$value'";
 					$db->query($sql);
+					if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+					{
+						append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tgetdata_exclude()");
+					}
 				} // end if title
 			} // end attributes loop
 		} // end fotos
@@ -70,12 +74,17 @@ function getdata_exclude($url, $db) // get list of images from commons
 function commons_get_list_exclude($db)
 {
 	global $config;
+
+	// set exclude to 2 in fotos so we know later which images are no longer in this category on commons
+	$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET `exclude`='1' WHERE `exclude`='2'";
+	$db->query($sql);
+	if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+	{
+		append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_list_exclude()");
+	}
+	
 	foreach($config['catremove'] as $element => $category)
 	{
-		// set exclude to 2 in fotos so we know later which images are no longer in this category on commons
-		$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET `exclude`='1' WHERE `exclude`='2'";
-		$db->query($sql);
-	
 		// get list of images from commons 
 		$url='http://commons.wikimedia.org/w/api.php?action=query&list=categorymembers&format=xml&cmtitle=Category:' . $category . '&cmprop=title&continue';
 		// read data and save to db
@@ -94,10 +103,13 @@ function commons_get_list_exclude($db)
 			// read data and save to db
 			$continue = getdata_exclude($url."=-||&cmcontinue=".$continue, $db);
 		} // end api loop
-		
-		// set exclude to 0 in fotos for images that are no longer in this category on commons
-		$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET `exclude`='0' WHERE `exclude`='2'";
-		$db->query($sql);
+	}
+	// set exclude to 0 in fotos for images that are no longer in this category on commons
+	$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET `exclude`='0' WHERE `exclude`='2'";	
+	$db->query($sql);
+	if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+	{
+		append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_list_exclude()");
 	}
 }
 

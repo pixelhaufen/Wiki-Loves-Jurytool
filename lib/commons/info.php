@@ -27,6 +27,12 @@ function commons_get_new_info($db)
 	
 	// get information about files from commons
 	$sql = "SELECT `name` FROM `" . $config['dbprefix'] . "fotos` WHERE `user` = '-'";
+	
+	if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+	{
+		append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_new_info()");
+	}
+	
 	$res = $db->query($sql);
 
 	if ($res)
@@ -117,6 +123,12 @@ function commons_get_new_info($db)
 					$time = date("H:i:s", $new_time);
 					
 					$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET user='$user' , date='$date' , time='$time' , size='$size' , width='$width' , height='$height' , pixel='$pixel' , url='$url' , descriptionurl='$descriptionurl', online='2' WHERE `name` = '$file'";
+					
+					if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+					{
+						append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_new_info()");
+					}
+					
 					$db->query($sql);
 				}
 			} // ($str !== FALSE)
@@ -130,8 +142,12 @@ function commons_get_licence($db)
 	global $config;
 	
 	// get information about files from commons
-	$sql = "SELECT `name` FROM `" . $config['dbprefix'] . "fotos` WHERE  `license` LIKE  '' AND (`online`=1 OR `online`=2)";
+	$sql = "SELECT `name` FROM `" . $config['dbprefix'] . "fotos` WHERE  `license` =  '' AND (`online`=1 OR `online`=2)";
 	$res = $db->query($sql);
+	if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+	{
+		append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_licence()");
+	}
 
 	if ($res)
 	{
@@ -162,6 +178,10 @@ function commons_get_licence($db)
 						{
 							$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET license='" . $license . "' WHERE `name` = '" . $file . "'";
 							$db->query($sql);
+							if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+							{
+								append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_licence()");
+							}
 						}
 					} // foreach
 				} // if(!isset($xml->query->pages->page->revisions->rev))
