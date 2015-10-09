@@ -90,7 +90,7 @@ else
 		$log = menue2();
 		
 		// user but no admin
-		if($_SESSION['admin']==0)
+		if($_SESSION['userlevel']==0)
 		{
 			$uploader = $text["contact_admin"] . ": " . $config['mail'];
 		}
