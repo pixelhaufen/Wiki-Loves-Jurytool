@@ -1,6 +1,6 @@
 <?php
 /**
- * Wiki Loves Jurytool
+ * Wiki Loves Jurytool Update insert thumburl
  *
  * @author Ruben Demus
  * @copyright 2015 Ruben Demus
@@ -20,13 +20,40 @@
  *
  */
 
-// get info for new files
-function commons_get_new_info($db)
+require_once "config/config.php"; // config stuff
+require_once "lib/lib.php"; // file functions
+
+// user_agent for bot
+$user_agent = $config['name'] .  "/" . $config['version']. " (" . $config['url'] . "; " . $config['mail'] . ")";
+ini_set('user_agent', $user_agent);
+
+// mysql
+$db = new mysqli($config['dbhost'], $config['dbuser'], $config['dbpassword'], $config['dbname']);
+
+if ($db->connect_error)
 {
-	global $config;
+	// log error
+	if($config['log']!="NO")
+	{
+		append_file("log/cron.txt","\n".date(DATE_RFC822)."\tdb connect_error\tmain()");
+	}
+}
+else
+{	
+	$sql1 = "CREATE TABLE IF NOT EXISTS `".$config['dbprefix']."fotos_commons` (
+			`name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+			`commons` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+			`online` int(11) NOT NULL,
+			KEY `name` (`name`)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
+	$db->query($sql1);
+
+	$sql2 = "ALTER TABLE `" . $config['dbprefix'] . "fotos`
+			ADD  `thumburl` TEXT NOT NULL;";
+	$db->query($sql2);
 	
 	// get information about files from commons
-	$sql = "SELECT `name` FROM `" . $config['dbprefix'] . "fotos` WHERE `user` = '-'";
+	$sql = "SELECT `name` FROM `" . $config['dbprefix'] . "fotos` WHERE `thumburl` = ''";
 	
 	if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
 	{
@@ -141,59 +168,8 @@ function commons_get_new_info($db)
 		} // while($row = mysql_fetch_array($res))
 	} // ($loop != 0)
 	$res->close();
-}
-
-function commons_get_licence($db)
-{
-	global $config;
 	
-	// get information about files from commons
-	$sql = "SELECT `name` FROM `" . $config['dbprefix'] . "fotos` WHERE  `license` =  '' AND (`online`=1 OR `online`=2)";
-	$res = $db->query($sql);
-	if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
-	{
-		append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_licence()");
-	}
-
-	if ($res)
-	{
-		while($row = $res->fetch_array(MYSQLI_ASSOC))
-		{
-			// commons api query
-			$url='http://commons.wikimedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=xml&titles='.urlencode($row['name']);
-			$file = $db->real_escape_string($row['name']);
-			// read data
-			$str = @file_get_contents($url);
-			
-			if($str === FALSE)
-			{
-				if($config['log']!="NO")
-				{
-					append_file("log/cron.txt","\n".date(DATE_RFC822)."\tfile:".$url."\tcommons_get_licence()");
-				}
-			}
-			else
-			{
-				$xml = new SimpleXMLElement($str);
-		
-				if(isset($xml->query->pages->page->revisions->rev))
-				{
-					foreach($config['license'] as $license)
-					{
-						if (stripos($xml->query->pages->page->revisions->rev[0], $license) !== false)
-						{
-							$sql = "UPDATE `" . $config['dbprefix'] . "fotos` SET license='" . $license . "' WHERE `name` = '" . $file . "'";
-							$db->query($sql);
-							if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
-							{
-								append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_licence()");
-							}
-						}
-					} // foreach
-				} // if(!isset($xml->query->pages->page->revisions->rev))
-			} // ($str !== FALSE)
-		} // row
-	}
-}
+	$db->close();
+} // $db
 
 ?>

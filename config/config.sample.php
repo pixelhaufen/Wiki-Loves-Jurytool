@@ -49,7 +49,7 @@ $config = array(
 	// general settings
 	'title' => '',
 	'name' => '',
-	'version' => '0.2.0',
+	'version' => '0.3.0',
 	'url' => 'http://localhost/WLJurytool',
 	'mail' => 'tooladmin@localhost',
 	'logo' => 'http://localhost/WLJurytool/theme/img/WLX.svg',

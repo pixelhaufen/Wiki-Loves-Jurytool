@@ -71,6 +71,7 @@ else if(isset($_POST["dbhost"]))
       `pixel` int(11) NOT NULL DEFAULT '0',
       `license` text COLLATE utf8_bin NOT NULL,
       `url` text COLLATE utf8_bin NOT NULL,
+	  `thumburl` text COLLATE utf8_bin NOT NULL,
       `descriptionurl` text COLLATE utf8_bin NOT NULL,
       `exclude` int(11) NOT NULL DEFAULT '0',
       `vote` int(11) NOT NULL DEFAULT '0',
@@ -134,6 +135,13 @@ else if(isset($_POST["dbhost"]))
 		ADD KEY `vote` (`vote`),
 		ADD KEY `name` (`name`);";
 	
+	$sql12 = "CREATE TABLE IF NOT EXISTS `" . $_POST["dbprefix"] . "fotos_commons` (
+		`name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+		`commons` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+		`online` int(11) NOT NULL,
+		KEY `name` (`name`)
+		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
+	
 
 	if ($db->connect_error)
 	{
@@ -149,6 +157,7 @@ else if(isset($_POST["dbhost"]))
 		echo "<pre>".html_nl($sql9)."</pre>";
 		echo "<pre>".html_nl($sql10)."</pre>";
 		echo "<pre>".html_nl($sql11)."</pre>";
+		echo "<pre>".html_nl($sql12)."</pre>";
 	}
 	else
 	{
@@ -186,15 +195,19 @@ else if(isset($_POST["dbhost"]))
 		}
 		if ($db->query($sql9) !== TRUE) {
 			echo "<h3>1. ".$text["no_db"]."</h3>";
-			echo "<pre>".html_nl($sql8)."</pre>";
+			echo "<pre>".html_nl($sql9)."</pre>";
 		}
 		if ($db->query($sql10) !== TRUE) {
 			echo "<h3>1. ".$text["no_db"]."</h3>";
-			echo "<pre>".html_nl($sql8)."</pre>";
+			echo "<pre>".html_nl($sql10)."</pre>";
 		}
 		if ($db->query($sql11) !== TRUE) {
 			echo "<h3>1. ".$text["no_db"]."</h3>";
-			echo "<pre>".html_nl($sql8)."</pre>";
+			echo "<pre>".html_nl($sql11)."</pre>";
+		}
+		if ($db->query($sql12) !== TRUE) {
+			echo "<h3>1. ".$text["no_db"]."</h3>";
+			echo "<pre>".html_nl($sql12)."</pre>";
 		}
 		$db->close();
 		echo "<h3>1. ".$text["db_created"]."</h3>";
@@ -301,7 +314,7 @@ else
 					<h3><?php echo $text['version']; ?></h3> 
 				</td>
 				<td>
-					<br><input name="version" value="0.2.0">
+					<br><input name="version" value="0.3.0">
 				</td>
 				<td>
 				</td>
