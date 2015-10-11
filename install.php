@@ -186,15 +186,15 @@ else if(isset($_POST["dbhost"]))
 		}
 		if ($db->query($sql9) !== TRUE) {
 			echo "<h3>1. ".$text["no_db"]."</h3>";
-			echo "<pre>".html_nl($sql8)."</pre>";
+			echo "<pre>".html_nl($sql9)."</pre>";
 		}
 		if ($db->query($sql10) !== TRUE) {
 			echo "<h3>1. ".$text["no_db"]."</h3>";
-			echo "<pre>".html_nl($sql8)."</pre>";
+			echo "<pre>".html_nl($sql10)."</pre>";
 		}
 		if ($db->query($sql11) !== TRUE) {
 			echo "<h3>1. ".$text["no_db"]."</h3>";
-			echo "<pre>".html_nl($sql8)."</pre>";
+			echo "<pre>".html_nl($sql11)."</pre>";
 		}
 		$db->close();
 		echo "<h3>1. ".$text["db_created"]."</h3>";
