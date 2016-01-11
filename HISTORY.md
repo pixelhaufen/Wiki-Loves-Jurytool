@@ -1,3 +1,10 @@
+## 0.3.0 (2015-10-11)
+
+* limit 50 in lists
+* use thumburl from commons
+* add commons source category
+
+
 ## 0.2.0 (2015-09-28)
 
 * db and query optimation

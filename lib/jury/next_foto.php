@@ -33,23 +33,15 @@ function display_foto($db, $sql, $programm, $starter)
 
 	$images = $res->num_rows;
 	$uploader = "";
-	
-	// way to goal
-	if($programm == "selected")
+
+	// nav_page
+	if(isset($_GET["part"]))
 	{
-		$uploader .= "<h1>" . $images . " " . $text['photos'] . "</h1>";
-		if($images < $config['goal'])
-		{
-			$uploader .= "<p>" . $text['missing'] . " " . ($config['goal'] - $images) . " " . $text['photos'] . "<br> </p>";
-		}
-		else if($images > $config['goal'])
-		{
-			$uploader .= "<p>" . $text['remove'] . " " . ($images - $config['goal']) . " " . $text['photos'] . "<br> </p>";
-		}
-		else
-		{
-			$uploader .= "<p>" . $text['perfekt'] . "<br> </p>";
-		}
+		$nav_page = $_GET["part"];
+	}
+	else
+	{
+		$nav_page = 0;
 	}
 
 	$i = $ii = 0;
@@ -78,15 +70,8 @@ function display_foto($db, $sql, $programm, $starter)
 		if (($images != 1) && (!isset($_GET["b"])))
 		{
 			$uploader .= "<td width=100px style=\"text-align: center; background-image: url(../theme/img/cws.gif); background-repeat: no-repeat; background-position: center; \">";
-			$uploader .= "<a href=\"".$row['url']."\" target=\"_blank\"><img src=\"".str_replace("/commons/","/commons/thumb/",$row['url'])."/";
-			if(stringEndsWith($row['name'],".tif") || stringEndsWith($row['name'],".tiff")) // ends with .tif or tiff
-			{
-				$uploader .= "lossy-page1-100px-".urlencode(str_replace("File:","",str_replace(' ', '_', $row['name']))) .".jpg\"";
-			}
-			else
-			{
-				$uploader .= "100px-".urlencode(str_replace("File:","",str_replace(' ', '_', $row['name']))) ."\"";
-			}
+			$uploader .= "<a href=\"".$row['url']."\" target=\"_blank\"><img src=\"";
+			$uploader .= $row['thumburl']."\" ";
 			if($row['width'] > $row['height'])
 			{
 				$uploader .= "width=\"100\"";
@@ -107,15 +92,7 @@ function display_foto($db, $sql, $programm, $starter)
 			}
 			else
 			{
-				$uploader .= str_replace("/commons/","/commons/thumb/",$row['url'])."/";
-				if(stringEndsWith($row['name'],".tif") || stringEndsWith($row['name'],".tiff")) // ends with .tif or tiff
-				{
-					$uploader .= "lossy-page1-".$_SESSION['width']."px-".urlencode(str_replace("File:","",str_replace(' ', '_', $row['name']))) .".jpg";
-				}
-				else
-				{
-					$uploader .= $_SESSION['width']."px-".urlencode(str_replace("File:","",str_replace(' ', '_', $row['name'])));
-				}
+				$uploader .= str_replace("/100px-","/".$_SESSION['width']."px-",$row['thumburl'])."\" ";
 				if($row['width'] > $row['height'])
 				{
 					$uploader .= "\" width=\"".$_SESSION['width'];
@@ -157,6 +134,7 @@ function display_foto($db, $sql, $programm, $starter)
 		{
 			$action2 = "";
 		}
+		$action2 .= "&part=".$nav_page;
 		
 		// both
 		if($programm != "selected")
@@ -209,9 +187,97 @@ function display_foto($db, $sql, $programm, $starter)
 	
 	$uploader .= "</table>";
 	
+	// way to goal
+	$way_to_goal = 0;
+	
+	// no immages
 	if($i == 0)
 	{
 		$uploader = "<h1>".$text['empty']."</h1>";
+	}
+	//else
+	
+	// next priv / 50
+	if($programm != "")
+	{
+		$nav = "";
+		$user = $db->real_escape_string($_SESSION['us']);
+		switch($programm)
+		{
+			case "gemerkt":
+				$sql = "SELECT COUNT(*) AS summe FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '".$user."' AND `vote` = 1";
+			break;
+			case "selected":
+				$sql = "SELECT COUNT(*) AS summe FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '".$user."' AND `vote` = 2";
+			break;
+			case "notselected":
+				$sql = "SELECT COUNT(*) AS summe FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '".$user."' AND `vote` = 10";
+			break;
+			case "ungelesen": 
+				$sql = "SELECT COUNT(*) AS `summe` FROM (SELECT `name`, `vote` FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '".$user."') votefiles RIGHT JOIN (SELECT `name` FROM `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` IS NULL";
+			break;
+		}
+		$res = $db->query($sql);
+		$exists = $res->num_rows;
+		
+		if($exists==1)
+		{
+			$row = $res->fetch_array(MYSQLI_ASSOC);
+			$parts = (int)($row['summe']/50);
+
+			// way to goal
+			$way_to_goal = $row['summe'];
+
+			if($parts > 0)
+			{
+				if(isset($_GET["b"]))
+				{
+					$vars = 'p='.$_GET["p"].'&b='.$_GET["b"];
+				}
+				else
+				{
+					$vars = 'p='.$_GET["p"];
+				}
+				
+				if($nav_page > 0)
+				{
+					$nav .= ' <a href="./index.php?'.$vars.'&part='.($nav_page-1).'"><img src="../theme/img/le.png" width="14"></a> ';
+				}
+				else
+				{
+					$nav .= ' <img src="../theme/img/leg.png" width="14"> ';
+				}
+				$nav .= ($nav_page+1);
+				if($nav_page < $parts)
+				{
+					$nav .= ' <a href="./index.php?'.$vars.'&part='.($nav_page+1).'"><img src="../theme/img/ri.png" width="14"></a> ';
+				}
+				else
+				{
+					$nav .= ' <img src="../theme/img/rig.png" width="14"> ';
+				}
+			}
+		}
+		$uploader = $nav . $uploader . $nav;
+	}
+	
+	// way to goal
+	if($programm == "selected")
+	{
+		$selected = "<h1>" . $way_to_goal . " " . $text['photos'] . "</h1>";
+		if($way_to_goal < $config['goal'])
+		{
+			$selected .= "<p>" . $text['missing'] . " " . ($config['goal'] - $way_to_goal) . " " . $text['photos'] . "<br> </p>";
+		}
+		else if($way_to_goal > $config['goal'])
+		{
+			$selected .= "<p>" . $text['remove'] . " " . ($way_to_goal - $config['goal']) . " " . $text['photos'] . "<br> </p>";
+		}
+		else
+		{
+			$selected .= "<p>" . $text['perfekt'] . "<br> </p>";
+		}
+		$uploader = $selected . $uploader;
 	}
 
 	return $uploader;
@@ -223,20 +289,29 @@ function next_foto($db, $programm)
 	global $text;
 	$user = $db->real_escape_string($_SESSION['us']);
 	$starter = 0;
+
+	if(isset($_GET["part"]))
+	{
+		$part = (int)$_GET["part"]*50;
+	}
+	else
+	{
+		$part = 0;
+	}
 	
 	switch($programm)
 	{
 		case "gemerkt":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user' AND `vote` = 1) votefiles LEFT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` ORDER BY `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user' AND `vote` = 1) votefiles LEFT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` ORDER BY `votefiles`.`sorttime` DESC LIMIT " . $part . ", 50";
 		break;
 		case "selected":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 2 ORDER BY `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 2 ORDER BY `votefiles`.`sorttime` DESC LIMIT " . $part . ", 50";
 		break;
 		case "notselected":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 10 ORDER BY `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 10 ORDER BY `votefiles`.`sorttime` DESC LIMIT " . $part . ", 50";
 		break;
 		case "ungelesen": 
-			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` IS NULL";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`  FROM `" . $config['dbprefix'] . "votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` IS NULL LIMIT " . $part . ", 50";
 		break;
 		default:
 			if(isset($_GET["n"]))

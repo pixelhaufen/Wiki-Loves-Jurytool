@@ -59,12 +59,12 @@ function get_meeting($db)
 			$db->query($sql);
 		}
 		// get selected
-		$sql = "SELECT `votefiles`.`name`, `votefiles`.`sum` AS points, `votefotos`.`user`, `votefotos`.`date`, `votefotos`.`time`, `votefotos`.`size`, `votefotos`.`width`, `votefotos`.`height`, `votefotos`.`url`, `votefotos`.`descriptionurl`, `votefotos`.`license` FROM (SELECT name, sum FROM `".$config['dbprefix']."points` WHERE  `round` = $round) votefiles LEFT JOIN (SELECT * FROM `".$config['dbprefix']."fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` ORDER BY `points` DESC";
+		$sql = "SELECT `votefiles`.`name`, `votefiles`.`sum` AS points, `votefotos`.`user`, `votefotos`.`date`, `votefotos`.`time`, `votefotos`.`size`, `votefotos`.`width`, `votefotos`.`height`, `votefotos`.`url`, `votefotos`.`thumburl`, `votefotos`.`descriptionurl`, `votefotos`.`license` FROM (SELECT name, sum FROM `".$config['dbprefix']."points` WHERE  `round` = $round) votefiles LEFT JOIN (SELECT * FROM `".$config['dbprefix']."fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` ORDER BY `points` DESC";
 	}
 	else // init
 	{
 		$round = 0;
-		$sql = "SELECT `votefiles`.`name`, `votefiles`.`jury`, `votefotos`.`user`, `votefotos`.`date`, `votefotos`.`time`, `votefotos`.`size`, `votefotos`.`width`, `votefotos`.`height`, `votefotos`.`url`, `votefotos`.`descriptionurl`, `votefotos`.`license` FROM (SELECT name, user AS jury FROM `".$config['dbprefix']."votes` WHERE `vote` =2) votefiles LEFT JOIN (SELECT * FROM  `".$config['dbprefix']."fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` ORDER BY `votefiles`.`name` ASC";
+		$sql = "SELECT `votefiles`.`name`, `votefiles`.`jury`, `votefotos`.`user`, `votefotos`.`date`, `votefotos`.`time`, `votefotos`.`size`, `votefotos`.`width`, `votefotos`.`height`, `votefotos`.`url`, `votefotos`.`thumburl`, `votefotos`.`descriptionurl`, `votefotos`.`license` FROM (SELECT name, user AS jury FROM `".$config['dbprefix']."votes` WHERE `vote` =2) votefiles LEFT JOIN (SELECT * FROM  `".$config['dbprefix']."fotos` WHERE (`jury` = 1)) votefotos ON `votefiles`.`name` = `votefotos`.`name` ORDER BY `votefiles`.`name` ASC";
 	}
 	
 	// loop photos
@@ -76,7 +76,7 @@ function get_meeting($db)
 	$uploader .= "<form action=\"meeting.php?r=$round\" method=\"post\">";
 	$uploader .= "<table border=0 cellpadding=0px width=1030px style=\"text-align: left;border-spacing: 2px 15px;\">";
 	$last = "";
-	while($row = $res->fetch_array())
+	while($row = $res->fetch_array(MYSQLI_ASSOC))
 	{
 		// if more members of jury have nominated same picture
 		if(($round == 1)&&($last == $row['name']))
@@ -101,15 +101,7 @@ function get_meeting($db)
 			}
 			else
 			{
-				$uploader .= str_replace("/commons/","/commons/thumb/",$row['url'])."/";
-				if(stringEndsWith($row['name'],".tif") || stringEndsWith($row['name'],".tiff")) // ends with .tif or tiff
-				{
-					$uploader .= "lossy-page1-600px-".urlencode(str_replace("File:","",str_replace(' ', '_', $row['name']))) .".jpg";
-				}
-				else
-				{
-					$uploader .= "600px-".urlencode(str_replace("File:","",str_replace(' ', '_', $row['name'])));
-				}
+				$uploader .= str_replace("/100px-","/".$_SESSION['width']."px-",$row['thumburl']);
 			}
 			if($row['width'] < $row['height'])
 			{

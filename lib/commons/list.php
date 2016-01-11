@@ -20,8 +20,58 @@
  *
  */
 
+function fotos_commons($db,$value,$category)
+{
+	global $config;
+	
+	$sql = "SELECT `name` FROM `" . $config['dbprefix'] . "fotos_commons` WHERE `name` = '$value' AND `commons` = '$category'";
+	$res = $db->query($sql);
+	if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+	{
+		append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tfotos_commons()");
+	}
+	
+	$num_commons = $res->num_rows;
+	$res->close();
+	if ($num_commons < 1)
+	{
+		$sql = "INSERT INTO " . $config['dbprefix'] . "fotos_commons(name, commons, online) VALUES ('$value','$category',2)";
+		$db->query($sql);
+		if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+		{
+			append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tfotos_commons()");
+		}
+	}
+	else if($num_commons == 1)
+	{
+		$sql = "UPDATE `" . $config['dbprefix'] . "fotos_commons` SET online='2' WHERE `name` = '$value' AND `commons` = '$category'";
+		$db->query($sql);
+		if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+		{
+			append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tfotos_commons()");
+		}
+	}
+	else
+	{
+		$sql = "DELETE FROM `" . $config['dbprefix'] . "fotos_commons` WHERE `name` = '$value' AND `commons` = '$category'";
+		$db->query($sql);
+		if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+		{
+			append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tfotos_commons()");
+		}
+		
+		$sql = "INSERT INTO " . $config['dbprefix'] . "fotos_commons(online, name, commons) VALUES ('2','$value','$category')"; 
+		$db->query($sql);
+		if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+		{
+			append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tfotos_commons()");
+		}
+	}
+}
+
+
 // get data from commons and save in db
-function getdata($url, $db) 
+function getdata($url, $db, $category) 
 {
 	global $config;
 	
@@ -81,6 +131,8 @@ function getdata($url, $db)
 							{
 								append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tgetdata()");
 							}
+							
+							fotos_commons($db,$value,$category);
 						}
 					}
 					else if($num_names == 1)
@@ -96,6 +148,8 @@ function getdata($url, $db)
 							{
 								append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tgetdata()");
 							}
+
+							fotos_commons($db,$value,$category);
 						}
 					}
 					else // an object can't be here twice...
@@ -113,6 +167,7 @@ function getdata($url, $db)
 						{
 							append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tgetdata()");
 						}
+						
 						// note that online is still 0 - we are not ready yet 
 						$sql = "INSERT INTO " . $config['dbprefix'] . "fotos(name, user, date, time, size, width, height, pixel, url, descriptionurl, online) VALUES ('$value','-','-','-',0,0,0,0,'-','-',0)";
 						$db->query($sql);
@@ -121,6 +176,7 @@ function getdata($url, $db)
 							append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tgetdata()");
 						}
 						
+						fotos_commons($db,$value,$category);
 					}
 				} // end if title
 			} // end attributes loop
@@ -145,10 +201,17 @@ function commons_get_list($db)
 	
 	foreach($config['catadd'] as $element => $category)
 	{
+		$sql = "UPDATE `" . $config['dbprefix'] . "fotos_commons` SET online='1' WHERE `commons` = '$category' AND `online`='2'";
+		$db->query($sql);
+		if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+		{
+			append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_list()");
+		}
+	
 		// commons api query
 		$url='http://commons.wikimedia.org/w/api.php?action=query&list=categorymembers&format=xml&cmtitle=Category:' . $category . '&cmprop=title&continue';
 		// read data and save to db
-		$continue = getdata($url, $db);
+		$continue = getdata($url, $db, $category);
 		while($continue != "") // loop while api gives data
 		{
 			if($continue == "connection error")
@@ -161,8 +224,15 @@ function commons_get_list($db)
 				return "STOP";
 			}
 			// read data and save to db
-			$continue = getdata($url."=-||&cmcontinue=".$continue, $db);
+			$continue = getdata($url."=-||&cmcontinue=".$continue, $db, $category);
 		} // end api loop
+
+		$sql = "UPDATE `" . $config['dbprefix'] . "fotos_commons` SET online='0' WHERE `commons` = '$category' AND `online`='1'";
+		$db->query($sql);
+		if(($config['log']=="PARANOID") || ($config['log']=="DEBUG"))
+		{
+			append_file("log/cron.txt","\n" . date(DATE_RFC822) . "\t" . $sql . "\tcommons_get_list()");
+		}
 	}
 	
 	// set online to 0 in fotos for images that are no longer in this category on commons

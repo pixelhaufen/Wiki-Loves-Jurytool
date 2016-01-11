@@ -32,12 +32,23 @@ function display_foto($db, $sql, $programm, $starter)
 	$res = $db->query($sql);
 
 	$images = $res->num_rows;
+	
+	// nav_page
+	if(isset($_GET["part"]))
+	{
+		$nav_page = $_GET["part"];
+	}
+	else
+	{
+		$nav_page = 0;
+	}
+	
 	$i = $ii = 0;
 	$uploader = "<table border=0 cellpadding=0px width=1000px style=\"text-align: left;border-spacing: 2px 15px;\">";
 	while($row = $res->fetch_array(MYSQLI_ASSOC)) // loop images
 	{
 		$i++;
-
+		
 		// background color
 		if(($i%2 == 1)&&($images != 1))
 		{
@@ -58,15 +69,8 @@ function display_foto($db, $sql, $programm, $starter)
 		if (($images != 1) && (!isset($_GET["b"])))
 		{
 			$uploader .= "<td style=\"text-align: center; background-image: url(../theme/img/cws.gif); background-repeat: no-repeat; background-position: center; height: 100px; width:100px;\">";
-			$uploader .= "<a href=\"".$row['url']."\" target=\"_blank\"><img src=\"".str_replace("/commons/","/commons/thumb/",$row['url'])."/";
-			if(stringEndsWith($row['name'],".tif") || stringEndsWith($row['name'],".tiff")) // ends with .tif or tiff
-			{
-				$uploader .= "lossy-page1-100px-".urlencode(str_replace("File:","",str_replace(' ', '_', $row['name']))) .".jpg\"";
-			}
-			else
-			{
-				$uploader .= "100px-".urlencode(str_replace("File:","",str_replace(' ', '_', $row['name']))) ."\"";
-			}
+			$uploader .= "<a href=\"".$row['url']."\" target=\"_blank\"><img src=\"";
+			$uploader .= $row['thumburl']."\" ";
 			if($row['width'] > $row['height'])
 			{
 				$uploader .= "width=\"100\"";
@@ -87,22 +91,14 @@ function display_foto($db, $sql, $programm, $starter)
 			}
 			else
 			{
-				$uploader .= str_replace("/commons/","/commons/thumb/",$row['url'])."/";
-				if(stringEndsWith($row['name'],".tif") || stringEndsWith($row['name'],".tiff")) // ends with .tif or tiff
-				{
-					$uploader .= "lossy-page1-".$_SESSION['width']."px-".urlencode(str_replace("File:","",str_replace(' ', '_', $row['name']))) .".jpg";
-				}
-				else
-				{
-					$uploader .= $_SESSION['width']."px-".urlencode(str_replace("File:","",str_replace(' ', '_', $row['name'])));
-				}
+				$uploader .= str_replace("/100px-","/".$_SESSION['width']."px-",$row['thumburl'])."\" ";
 				if($row['width'] > $row['height'])
 				{
-					$uploader .= "\" width=\"".$_SESSION['width'];
+					$uploader .= "width=\"".$_SESSION['width'];
 				}
 				else
 				{
-					$uploader .= "\" height=\"".$_SESSION['width'];
+					$uploader .= "height=\"".$_SESSION['width'];
 				}
 			}
 			$uploader .= "\"></a></td>";
@@ -116,7 +112,19 @@ function display_foto($db, $sql, $programm, $starter)
 		}
 		
 		// info about image
-		$uploader1 =  "&nbsp;". sha1($row['user']) . " <br>&nbsp;".$row['date']." ".$row['time']."<br>&nbsp;".round($row['size']/1024/1024,2)." MB, ".$row['width']."x".$row['height']." px<br>&nbsp;".$row['license']."<br>&nbsp;<a href=\"".$row['descriptionurl']."\" target=\"_blank\" class=\"co\">commons</a></td>";
+		$uploader1 = "";
+		$sql = "SELECT `commons` FROM `" . $config['dbprefix'] . "fotos_commons` WHERE `name` LIKE '".$db->real_escape_string($row['name'])."' ";
+		$commons_cat = $db->query($sql);
+		
+		if($commons_cat->num_rows >= 1)
+		{
+			while($commonsrow = $commons_cat->fetch_array(MYSQLI_ASSOC))
+			{
+				$uploader1 .=  "&nbsp;Category:<b>" . str_replace('_',' ',$commonsrow['commons']) . "</b> <br>";
+			}
+		}
+		
+		$uploader1 .=  "&nbsp;". sha1($row['user']) . " <br>&nbsp;".$row['date']." ".$row['time']."<br>&nbsp;".round($row['size']/1024/1024,2)." MB, ".$row['width']."x".$row['height']." px<br>&nbsp;".$row['license']."<br>&nbsp;<a href=\"".$row['descriptionurl']."\" target=\"_blank\" class=\"co\">commons</a></td>";
 		
 		// voting url
 		if($programm != "")
@@ -137,6 +145,7 @@ function display_foto($db, $sql, $programm, $starter)
 		{
 			$action2 = "";
 		}
+		$action2 .= "&part=".$nav_page;
 
 		$uploader2 = "&nbsp;".$text["vote"]."<br><br>&nbsp;";
 		
@@ -218,6 +227,7 @@ function display_foto($db, $sql, $programm, $starter)
 	
 	$uploader .= "</table>";
 	
+	// no immages
 	if($i == 0)
 	{
 		if($programm == "")
@@ -228,6 +238,72 @@ function display_foto($db, $sql, $programm, $starter)
 		{
 			$uploader = "<h1>".$text["empty"]."</h1>";
 		}
+	}
+	
+	// next priv / 50
+	if($programm != "")
+	{
+		$nav = "";
+		$user = $db->real_escape_string($_SESSION['us']);
+		switch($programm)
+		{
+			case "0":
+				$sql = "SELECT COUNT(*) AS summe FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '".$user."' AND `vote` = 0 ";
+			break;
+			case "1":
+				$sql = "SELECT COUNT(*) AS summe FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '".$user."' AND `vote` = 1 ";
+			break;
+			case "2":
+				$sql = "SELECT COUNT(*) AS summe FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '".$user."' AND `vote` = 2 ";
+			break;
+			case "3":
+				$sql = "SELECT COUNT(*) AS summe FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '".$user."' AND `vote` = 3 ";
+			break;
+			case "4":
+				$sql = "SELECT COUNT(*) AS summe FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '".$user."' AND `vote` = 4 ";
+			break;
+			case "5":
+				$sql = "SELECT COUNT(*) AS summe FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '".$user."' AND `vote` = 5 ";
+			break;
+		}
+		$res = $db->query($sql);
+		$exists = $res->num_rows;
+		
+		if($exists==1)
+		{
+			$row = $res->fetch_array(MYSQLI_ASSOC);
+			$parts = (int)($row['summe']/50);
+			if($parts > 0)
+			{
+				if(isset($_GET["b"]))
+				{
+					$vars = 'p='.$_GET["p"].'&b='.$_GET["b"];
+				}
+				else
+				{
+					$vars = 'p='.$_GET["p"];
+				}
+				
+				if($nav_page > 0)
+				{
+					$nav .= ' <a href="./index.php?'.$vars.'&part='.($nav_page-1).'"><img src="../theme/img/le.png" width="14"></a> ';
+				}
+				else
+				{
+					$nav .= ' <img src="../theme/img/leg.png" width="14"> ';
+				}
+				$nav .= ($nav_page+1);
+				if($nav_page < $parts)
+				{
+					$nav .= ' <a href="./index.php?'.$vars.'&part='.($nav_page+1).'"><img src="../theme/img/ri.png" width="14"></a> ';
+				}
+				else
+				{
+					$nav .= ' <img src="../theme/img/rig.png" width="14"> ';
+				}
+			}
+		}
+		$uploader = $nav . $uploader . $nav;
 	}
 		
 	return $uploader;
@@ -240,36 +316,45 @@ function next_foto($db, $programm)
 	$user = $db->real_escape_string($_SESSION['us']);
 	$starter = 0;
 	
+	if(isset($_GET["part"]))
+	{
+		$part = (int)$_GET["part"]*50;
+	}
+	else
+	{
+		$part = 0;
+	}
+	
 	switch($programm)
 	{
 		// ignored
 		case "0":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 0 ORDER BY  `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 0 ORDER BY  `votefiles`.`sorttime` DESC LIMIT " . $part . ", 50";
 		break;
 		
 		// 1 star
 		case "1":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 1 ORDER BY  `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 1 ORDER BY  `votefiles`.`sorttime` DESC LIMIT " . $part . ", 50";
 		break;
 		
 		// 2 stars
 		case "2":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 2 ORDER BY  `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 2 ORDER BY  `votefiles`.`sorttime` DESC LIMIT " . $part . ", 50";
 		break;
 		
 		// 3 stars
 		case "3":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 3 ORDER BY  `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 3 ORDER BY  `votefiles`.`sorttime` DESC LIMIT " . $part . ", 50";
 		break;
 		
 		// 4 stars
 		case "4":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 4 ORDER BY  `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 4 ORDER BY  `votefiles`.`sorttime` DESC LIMIT " . $part . ", 50";
 		break;
 		
 		// 5 stars
 		case "5":
-			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 5 ORDER BY  `votefiles`.`sorttime` DESC";
+			$sql = "SELECT * FROM (SELECT `name`, `vote`, `time` AS `sorttime` FROM `" . $config['dbprefix'] . "v_votes` WHERE `user` = '$user') votefiles RIGHT JOIN (SELECT * FROM  `" . $config['dbprefix'] . "fotos` WHERE (`online` = 1 OR `online` = 2) AND (`exclude` = 0)) votefotos ON `votefiles`.`name` = `votefotos`.`name` WHERE `votefiles`.`vote` = 5 ORDER BY  `votefiles`.`sorttime` DESC LIMIT " . $part . ", 50";
 		break;
 		
 		// unseen
