@@ -1,0 +1,20 @@
+web:
+  build: .
+  dockerfile: conf/Dockerfile.web
+  ports:
+    - "8000:80"
+  links:
+    - db
+  volumes:
+    - .:/var/www/html/
+
+db:
+  build: ./conf
+  dockerfile: Dockerfile.db
+  volumes:
+    - ./mysql:/etc/mysql/conf.d
+  environment:
+    MYSQL_ROOT_PASSWORD: root_password
+    MYSQL_DATABASE: WLJ
+    MYSQL_USER: WLJdbUser
+    MYSQL_PASSWORD: password
