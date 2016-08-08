@@ -163,7 +163,7 @@ function jury_user($db)
 	}
 	else
 	{
-		$uploader .= create_user_form($db, "j=s", $text['prejury']);
+		$uploader .= create_user_form($db, "j=s", $text['jury']);
 	}
 	
 	$uploader .= user_list($db, "");
